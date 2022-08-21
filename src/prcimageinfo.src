@@ -1,0 +1,4 @@
+#!/bin/sh
+prcimageinfo(){
+  cat - | jq '{no:.no,filename:.filename,ext:.ext,fsize:.fsize,md5:.md5,tim:.tim,tn_h:.tn_h,tn_w:.tn_w,h:.h,w:.w,url:("https://i.4cdn.org/g/"+(.tim|tostring)+.ext),thumburl:("https://i.4cdn.org/g/"+(.tim|tostring)+"s.jpg")}'
+}

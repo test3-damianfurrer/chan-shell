@@ -1,0 +1,4 @@
+#!/bin/sh
+picselect(){
+  cat - | /home/damian/source-code/sxiv/sxiv-test -1iol
+}

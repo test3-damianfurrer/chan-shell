@@ -1,0 +1,8 @@
+#!/bin/sh
+parsehtml(){
+cat - | sed 's/<br>/\n/g' | sed 's/\&#039;/'"'"'/g' | sed 's/\&quot;/"/g' | sed 's/<wbr>//g' | sed -r 's/(<span class="quote">\&gt;)(.*)(<\/span>)/>\2/g' | \
+sed -r 's/(<a href=")(.*)(" class="quotelink"><a href=")(.*)(" class="quotelink">\&gt;\&gt;\&gt;)(.*)(<\/a><\/a>)/>>>\6/g' | \
+sed -r 's/(<a href=")(.*)(" class="quotelink">\&gt;\&gt;)(.*)(<\/a>)/>>\4/g' | \
+sed -r 's/(<a href=")(.*)(">)(.*)(<\/a>)/Link: \4/g'
+
+}

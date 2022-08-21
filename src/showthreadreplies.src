@@ -1,0 +1,50 @@
+#!/bin/sh
+showthreadreplies(){
+cd "threads/$1/replies"
+for f in *
+do
+  cd "$f"
+  showthreadreply || return 1
+  cd ..
+done
+}
+
+showthreadreply(){
+  buttons="next:0,exit:100"
+  btndef="next"
+  fullsize=$(getimage < "image.json")
+  if [ $? -lt 1 ]; then
+  	url=$(jq -r '.url' <<< "${fullsize}")
+  	fullsize=$(jq -r '.name' <<< "${fullsize}")
+	buttons="thumb:10,image:20,$buttons"
+	btndef="thumb"
+  fi
+  txt=$(getcommenttxt < "comment.json") # |
+  while [ "$exit" == "" ]
+  do
+	xmessage -file - -buttons "$buttons" -default "$btndef" <<< "${txt}"
+	case $? in
+	10)
+	  sxiv "thumb.jpg"
+	  #btndef="image"
+	  btndef="next"
+	  ;;
+	20)
+#	echo "url: ${url}"
+#	echo "fullsize: $fullsize"
+	  curl "${url}" > "$fullsize" 2> /dev/null && \
+	  sxiv "$fullsize"
+	  btndef="next"
+	;;
+	100)
+	  return 1
+	;;
+	*)
+	  return
+	;;
+  	esac
+  done
+  echo ""
+}
+
+[ "$(type -t getimage)" == "function" ] || source ./src/getimage.src

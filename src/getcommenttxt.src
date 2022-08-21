@@ -1,0 +1,18 @@
+#!/bin/sh
+getcommenttxt(){
+cominf=$(cat -)
+
+cap=$(jq -r '.capcode' <<< "${cominf}")
+if [ "$cap" == "null" ]; then
+  name=$(jq -r '.name' <<< "${cominf}")
+else
+  name=$(jq -r '.name+"##"+.capcode' <<< "${cominf}")
+fi
+now=$(jq -r '(.no|tostring)+" - "+.now' <<< "${cominf}")
+echo "$name: $now"
+echo ""
+jq -r '.com' <<< "${cominf}" | sed 's/^null$//' | parsehtml
+jq -r '"To: "+(.resto|tostring)' <<< "${cominf}"
+}
+
+[ "$(type -t parsehtml)" == "function" ] || source ./src/parsehtml.src

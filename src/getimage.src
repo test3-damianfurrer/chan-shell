@@ -1,0 +1,19 @@
+#!/bin/sh
+dlfullimage(){
+img=$(cat -)
+basep="$1"
+name=$(jq -r '.name' <<< "${img}")
+img=$(jq -r '.url' <<< "${img}")
+curl "${img}" > "$basep$name" 2>/dev/null
+echo "$basep$name"
+return $?
+}
+
+getimage(){
+imginf=$(cat -)
+
+fname=$(jq -r '.filename' <<< "${imginf}")
+[ "$fname" == "null" ] && return 1
+[ -e "thumb .jpg" ] || curl $(jq -r '.thumburl' <<< "${imginf}") > thumb.jpg 2>/dev/null || return 2
+jq -r '{url:.url,name:(.filename+.ext)}' <<< "${imginf}"
+}

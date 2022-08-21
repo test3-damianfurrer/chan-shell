@@ -1,0 +1,19 @@
+#!/bin/sh
+prcthread(){
+  thread=$(cat -)
+  no=$(jq '.no' <<< "${thread}")
+  if [ ! -d "threads/$no/ln" ]; then
+    mkdir -p "threads/$no/ln"
+    echo "${thread}" > "threads/$no/info.json"
+    thumburl=$(prcimageinfo <<< "${thread}" | tee "threads/$no/image.json" | jq -r '.thumburl')
+    urlname=$(prcthreadinfo <<< "${thread}" | tee  "threads/$no/thread.json" | jq -r '.semantic_url')
+    prccomment <<< "${thread}" > "threads/$no/comment.json"
+    curl "$thumburl" > "threads/$no/thumb.jpg" 2>/dev/null
+    ln -s "../thumb.jpg" "threads/$no/ln/$urlname"
+
+  fi
+}
+
+[ "$(type -t prcimageinfo)" == "function" ] || source ./src/prcimageinfo.src
+[ "$(type -t prcthreadinfo)" == "function" ] || source ./src/prcthreadinfo.src
+[ "$(type -t prccomment)" == "function" ] || source ./src/prccomment.src

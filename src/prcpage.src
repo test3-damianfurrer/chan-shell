@@ -1,0 +1,21 @@
+#!/bin/sh
+prcpage(){
+	pageinf=$(cat -)
+	page=$(jq '.page' <<< "${pageinf}")
+
+	if [ -d "pages/$page" ];then
+		rm pages/$page/*
+	else
+		mkdir -p "pages/$page"
+	fi
+	mkdir -p threads
+	while read no
+	do
+		mkdir -p "threads/$no"
+		ln -s "../../threads/$no" "pages/$page/$no"
+	done <<< $(jq '.threads[].no' <<< "${pageinf}")
+	jq '.threads' <<< "${pageinf}" | prcthreads "$page"
+
+}
+
+[ "$(type -t prcthreads)" == "function" ] || source ./src/prcthreads.src

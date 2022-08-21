@@ -1,0 +1,17 @@
+#!/bin/sh
+prclastreply(){
+	reply=$(cat - )
+
+	no=$(jq '.no' <<< "${reply}")
+	if [ ! -e "replies/$no/image.json" ]; then
+		mkdir -p "replies/$no"
+		echo "${reply}" > "replies/$no/reply.json"
+		prcimageinfo <<< "${reply}" > "replies/$no/image.json"
+		prccomment <<< "${reply}" > "replies/$no/comment.json"
+		prcthreadinfosub <<< "${reply}" > "replies/$no/noinfoshouldbehere.json"
+	fi
+}
+
+[ "$(type -t prcimageinfo)" == "function" ] || source ./src/prcimageinfo.src
+[ "$(type -t prcthreadinfo)" == "function" ] || source ./src/prcthreadinfo.src #remove
+[ "$(type -t prccomment)" == "function" ] || source ./src/prccomment.src

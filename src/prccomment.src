@@ -1,0 +1,4 @@
+#!/bin/sh
+prccomment(){
+  cat - | jq '{no:.no,now:.now,com:.com,name:.name,resto:.resto,time:.time,capcode:.capcode}'
+}

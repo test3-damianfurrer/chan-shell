@@ -1,0 +1,28 @@
+#!/bin/sh
+
+prcthreadcat(){
+	val=$(cat - | jq "{val:.$1,no:.no}")
+	no=$(jq -r '.no' <<< "$val")
+	val=$(jq -r '.val' <<< "$val")
+	[ "$val" != "1" ] && return
+
+	if [ ! -L "$1/$no" ]; then
+		mkdir -p "$1"
+		ln -s "../threads/$no" "$1/$no"
+	fi
+}
+prcthreadinfo(){
+  inf=$(cat -)
+  no=$(jq '.no' <<< "${inf}")
+  jq -r '.last_replies' <<< "${inf}" | prclastreplies "$no" > /dev/null
+  
+  prcthreadcat 'sticky' <<< "${inf}" > /dev/null
+  prcthreadcat 'closed' <<< "${inf}" > /dev/null
+  prcthreadinfosub <<< "${inf}"
+}
+prcthreadinfosub(){
+  cat - | jq '{no:.no,closed:.closed,sticky:.sticky,images:.images,replies:.replies,omitted_images:.omitted_images,omitted_posts:.omitted_posts,last_modified:.last_modified,semantic_url:.semantic_url,unique_ips:.unique_ips}'
+}
+
+[ "$(type -t prclastreplies)" == "function" ] || source ./src/prclastreplies.src
+

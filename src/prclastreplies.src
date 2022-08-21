@@ -1,0 +1,23 @@
+#!/bin/sh
+prclastreplies(){
+	tno="$1"
+	replies=$(cat - )
+	[ "$replies" == "null" ] && return
+	declare -i i
+	i=0
+	nos=$(jq '.[].no' <<< "${replies}")
+	while read numbr
+	do
+		if [ ! -d "replies/$numbr" ];then
+			if [ ! -d "threads/$numbr" ];then
+			mkdir -p "replies/$numbr"
+			mkdir -p "threads/$tno/replies"
+			ln -s "../../../replies/$numbr" "threads/$tno/replies/$numbr"
+			jq ".[$i]" <<< "${replies}" | prclastreply >&2
+			fi
+		fi
+		i+=1
+	done <<< "$nos"
+}
+
+[ "$(type -t prclastreply)" == "function" ] || source ./src/prclastreply.src

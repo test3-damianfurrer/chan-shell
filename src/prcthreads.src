@@ -1,0 +1,16 @@
+#!/bin/sh
+prcthreads(){
+	threads=$(cat -)
+	page="$1"
+
+	max=$(jq '.[].no' <<< "${threads}" | wc -l)
+	declare -i i
+	i=0
+	while [ $i -lt $max ]
+	do
+		jq ".[$i]" <<< "${threads}" | prcthread
+		i+=1
+	done
+}
+
+[ "$(type -t prcthread)" == "function" ] || source ./src/prcthread.src
